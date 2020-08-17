@@ -1,6 +1,4 @@
 const Discord = require('discord.js')
-const bot = new Discord.Client({disableEveryone: true});
-const db = require("quick.db");
 const ms = require("ms");
 
 module.exports = {
@@ -9,15 +7,9 @@ module.exports = {
     description: "sets slow mode in the channel.",
     run: async (bot, message, args) => {
 
-    let channel;
-  
-    let channels = await db.fetch(`channel_${message.guild.id}`)
+    let channel = await bot.db.fetch(`channel_${message.guild.id}`)
     
-    if(channels == null){
-      channel = message.channel.name;
-    } else {
-      channel = channels;
-    }
+    if(channel == null) channel = message.channel.name;
     
     if(!message.member.hasPermission("MANAGE_CHANNELS")) return message.reply("you don't have the **Manage Channels** permission to use this command!")
     if(!message.guild.me.hasPermission("MANAGE_CHANNELS")) return message.reply(`I do not have the **Manage Channels** permission to use this command!`)
@@ -35,7 +27,7 @@ module.exports = {
         .setColor("#3654ff")
         .setFooter(`ID: ${message.author.id}`)
         .setTimestamp()
-        var set = message.guild.channels.find(`name`, `${channel}`)
+        var set = message.guild.channels.find(c => c.name === channel)
         set.send(slowEmb);
 
             }
